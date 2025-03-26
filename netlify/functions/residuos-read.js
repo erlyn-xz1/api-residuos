@@ -11,10 +11,12 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 exports.handler = async (event, context) => {
   try {
     // No necesitamos extraer un ID de la URL, ya que queremos leer todos los residuos.
-    // Construimos la consulta para seleccionar todos los campos de la tabla 'residuos'.
+    // Construimos la consulta para seleccionar todos los campos de la tabla 'residuos'
+    // y AÑADIMOS la cláusula para ordenar por 'id' de forma ascendente.
     const { data, error } = await supabase
       .from('residuos')
-      .select('id, nombre, tipo, descripcion');
+      .select('id, nombre, tipo, descripcion')
+      .order('id', { ascending: true }); // Devuelve los resduos ordenados por el ID
 
     if (error) {
       console.error('Error al leer residuos:', error);
