@@ -1,8 +1,14 @@
-const sqlite3 = require('sqlite3').verbose();
+// Importa el cliente de Supabase
+const { createClient } = require('@supabase/supabase-js');
+
+// Define las variables de entorno para la URL y la clave de Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+// Inicializa el cliente de Supabase
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 exports.handler = async (event, context) => {
-  const db = new sqlite3.Database('./Residuos.db');
-
   try {
     const body = JSON.parse(event.body);
     const { nombre, tipo, descripcion } = body;
@@ -14,27 +20,29 @@ exports.handler = async (event, context) => {
       };
     }
 
-    return new Promise((resolve, reject) => {
-      db.run('INSERT INTO residuos (nombre, tipo, descripcion) VALUES (?, ?, ?)', [nombre, tipo, descripcion], function(err) {
-        if (err) {
-          reject({
-            statusCode: 500,
-            body: JSON.stringify({ error: err.message }),
-          });
-        } else {
-          resolve({
-            statusCode: 201,
-            body: JSON.stringify({ message: 'Residuo creado correctamente', id: this.lastID }),
-          });
-        }
-      });
-    });
+    const { data, error } = await supabase
+      .from('residuos')
+      .insert([{ nombre, tipo, descripcion }])
+      .select(); // Para obtener los datos insertados
+
+    if (error) {
+      console.error('Error al insertar residuo:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: error.message }),
+      };
+    }
+
+    return {
+      statusCode: 201,
+      body: JSON.stringify({ message: 'Residuo creado correctamente', data }),
+    };
+
   } catch (error) {
+    console.error('Error general en la función:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ error: 'Error general en la función' }),
     };
-  } finally {
-    db.close();
   }
 };
