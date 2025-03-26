@@ -10,17 +10,14 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 exports.handler = async (event, context) => {
   try {
-    const id = event.path.split('/').pop(); // Obtener el ID de la URL
+    // Para leer todos los residuos, no necesitamos extraer un ID de la URL.
+    // Eliminamos la línea que intentaba obtener el ID.
+    // const id = event.path.split('/').pop();
 
-    let query = supabase
+    // Construimos la consulta para seleccionar todos los campos de la tabla 'residuos'.
+    const { data, error } = await supabase
       .from('residuos')
       .select('id, nombre, tipo, descripcion');
-
-    if (id) {
-      query = query.eq('id', id); // Filtrar por ID si se proporciona
-    }
-
-    const { data, error } = await query;
 
     if (error) {
       console.error('Error al leer residuos:', error);
@@ -30,9 +27,10 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Devolvemos la lista completa de residuos.
     return {
       statusCode: 200,
-      body: JSON.stringify(id ? (data.length > 0 ? data[0] : null) : data),
+      body: JSON.stringify(data),
     };
 
   } catch (error) {
