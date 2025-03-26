@@ -1,7 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
 exports.handler = async (event, context) => {
-  const db = new sqlite3.Database('./Residuos.db');
+  // Construye la ruta a la base de datos relativa a la ubicación de la función
+  const dbPath = path.join(__dirname, '..', '..', 'Residuos.db');
+  const db = new sqlite3.Database(dbPath);
 
   try {
     const body = JSON.parse(event.body);
