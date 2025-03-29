@@ -1,6 +1,6 @@
-Proyecto: TB4 App  
+Proyecto: api-residuos 
 Autor: Torres Julca Erlyn Miguel
-Descripción: Esta API maneja un CRUD para la tabla de mi app
+Descripción: Esta API maneja un CRUD para la tabla de mi app (TB4)
 
 Notas:  
 - El código está comentado para facilitar su comprensión.
